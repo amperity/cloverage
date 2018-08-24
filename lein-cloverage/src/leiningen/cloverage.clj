@@ -3,13 +3,22 @@
             [leiningen.core.main :as main])
   (:import (clojure.lang ExceptionInfo)))
 
-(defn get-lib-version []
-  (or (System/getenv "CLOVERAGE_VERSION") "RELEASE"))
+(defn get-lib-version
+  [project]
+  (or (System/getenv "CLOVERAGE_VERSION")
+      ;; Use the same version of cloverage as lein-cloverage.
+      (->> project
+           (:plugins)
+           (filter (comp #{'amperity/lein-cloverage} first))
+           (first)
+           (second))))
 
 (defn already-has-cloverage? [project]
   (seq (for [[id _version] (:dependencies project)
-             :when (= id 'cloverage/cloverage)]
-         true)))
+             :when (#{'amperity/cloverage 'cloverage/cloverage} id)]
+         (do (when (= 'cloverage/cloverage id)
+               (println "WARN: non-Amperity cloverage is on the classpath"))
+             true))))
 
 (defn ^:pass-through-help cloverage
   "Run code coverage on the project.
@@ -23,7 +32,7 @@
   (let [project (if (already-has-cloverage? project)
                   project
                   (update-in project [:dependencies]
-                             conj    ['cloverage (get-lib-version)]))
+                             conj    ['amperity/cloverage (get-lib-version project)]))
         opts    (assoc (:cloverage project)
                        :src-ns-path (vec (:source-paths project))
                        :test-ns-path (vec (:test-paths project)))]

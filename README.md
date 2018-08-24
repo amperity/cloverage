@@ -1,6 +1,8 @@
 cloverage
 =========
 
+Amperity fork of [cloverage](https://github.com/cloverage/cloverage).
+
 Simple clojure coverage tool.
 
 Travis: [![Build Status](https://travis-ci.org/cloverage/cloverage.svg?branch=master)](https://travis-ci.org/cloverage/cloverage)
@@ -9,7 +11,7 @@ CircleCI: [![CircleCI](https://circleci.com/gh/cloverage/cloverage.svg?style=shi
 
 ## Installation
 
-Add [![Clojars Project](http://clojars.org/lein-cloverage/latest-version.svg)](http://clojars.org/lein-cloverage) to :plugins in your .lein/profiles.clj
+Add `[amperity/lein-cloverage "1.0.13-SNAPSHOT"]` to :plugins in your .lein/profiles.clj
 
 ## Testing frameworks support
 
