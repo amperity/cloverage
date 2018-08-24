@@ -431,8 +431,9 @@
                  wrapped   (try
                              (wrap f-var line-hint form)
                              (catch Throwable t
-                               (throw+ t "Couldn't wrap form %s at line %s"
-                                       form line-hint)))]
+                               (log/warnf "Got exception while instrumenting line %d: %s"
+                                          line-hint (str t))
+                               nil))]
              (try
                (binding [*file*        filename
                          *source-path* filename]
@@ -440,13 +441,8 @@
                (binding [*print-meta* true]
                  (tprn "Evalling" wrapped " with meta " (meta wrapped)))
                (catch Exception e
-                 (throw (Exception.
-                         (str "Couldn't eval form "
-                              (binding [*print-meta* true]
-                                (with-out-str (prn wrapped)))
-                              (with-out-str (prn (macroexpand-all wrapped)))
-                              (with-out-str (prn form)))
-                         e))))
+                 (log/warnf "Got error while evaluating line %d with instrumentation: %s"
+                            line-hint (str e))))
              (recur (conj instrumented-forms wrapped)))
            (let [rforms (reverse instrumented-forms)]
              (dump-instrumented rforms lib)
